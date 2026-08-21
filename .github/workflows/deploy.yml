@@ -1,4 +1,4 @@
-name: Deploy cinematic to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -23,15 +23,14 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-
-      - name: Upload the whole site as a Pages artifact
+        with:
+          enablement: true
+      - name: Upload site artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: "."
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

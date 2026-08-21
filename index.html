@@ -3,79 +3,84 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0c0410" />
-  <meta name="description" content="A cinematic birthday surprise for Agnes Charity, by Bob Sebastian." />
+  <meta name="theme-color" content="#0b0308" />
+  <meta name="description" content="A beating rose for Agnes Charity, by Bob Sebastian." />
   <title>For Agnes Charity &#10084;</title>
-
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500&family=Great+Vibes&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Great+Vibes&family=Montserrat:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --ink:#0b0308; --rose:#ff6fa5; --pink:#ff9ec4; --blush:#ffd7e6;
+      --pearl:#fff6fa; --gold:#e8c690; --muted:rgba(255,224,236,.62);
+      --serif:"Cormorant Garamond",serif; --script:"Great Vibes",cursive; --sans:"Montserrat",sans-serif;
+    }
+    *{box-sizing:border-box;}
+    html,body{margin:0;width:100%;height:100%;}
+    body{background:var(--ink);color:var(--pearl);font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased;}
+
+    /* Soft romantic backdrop glow behind the rose. */
+    body::before{content:"";position:fixed;inset:0;z-index:-2;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(255,111,165,.18), transparent 42%),
+        radial-gradient(circle at 50% 105%, rgba(150,30,80,.35), transparent 60%),
+        linear-gradient(160deg,#0a0206,#170510 55%,#0b0308);}
+
+    #rose{position:fixed;inset:0;width:100%;height:100%;z-index:1;display:block;}
+
+    /* The letter sits below the rose, fading in line by line. */
+    .letter{position:fixed;left:50%;bottom:6.5vh;transform:translateX(-50%);z-index:3;
+      width:min(680px,90vw);text-align:center;pointer-events:none;}
+    .letter .greet{font-family:var(--script);font-size:clamp(2rem,8vw,3rem);color:var(--blush);
+      text-shadow:0 0 30px rgba(255,158,196,.4);opacity:0;transform:translateY(12px);transition:1s ease;}
+    .letter p{margin:.5rem auto 0;max-width:34ch;font-family:var(--serif);font-style:italic;
+      font-size:clamp(1.05rem,3.4vw,1.4rem);line-height:1.5;color:rgba(255,246,250,.92);
+      text-shadow:0 2px 18px rgba(0,0,0,.5);opacity:0;transform:translateY(12px);transition:1.1s ease;}
+    .letter .sign{margin-top:1rem;font-family:var(--script);font-size:clamp(1.6rem,6vw,2.4rem);
+      color:var(--pink);opacity:0;transform:translateY(12px);transition:1.1s ease;}
+    .letter .show{opacity:1;transform:none;}
+
+    /* Small title that breathes at the top. */
+    .title{position:fixed;top:6vh;left:50%;transform:translateX(-50%);z-index:3;text-align:center;width:90vw;}
+    .title .k{margin:0;color:var(--muted);letter-spacing:.4em;text-transform:uppercase;font-size:clamp(.6rem,2.4vw,.78rem);
+      opacity:0;animation:fadeIn 1.6s .3s forwards;}
+    .title .n{margin:.4rem 0 0;font-family:var(--serif);font-weight:500;letter-spacing:-.01em;
+      font-size:clamp(2.2rem,9vw,3.6rem);text-shadow:0 0 44px rgba(255,158,196,.3);
+      opacity:0;animation:fadeIn 1.8s .7s forwards;}
+
+    .controls{position:fixed;right:max(1rem,env(safe-area-inset-right));bottom:max(1rem,env(safe-area-inset-bottom));
+      z-index:5;display:flex;gap:.5rem;opacity:0;visibility:hidden;transition:.6s;}
+    .controls.show{opacity:1;visibility:visible;}
+    .icon-btn{display:grid;place-items:center;width:42px;height:42px;border:1px solid rgba(255,214,230,.18);
+      border-radius:50%;color:rgba(255,241,246,.82);background:rgba(24,6,14,.5);backdrop-filter:blur(8px);cursor:pointer;}
+    .icon-btn:hover{color:#fff;background:rgba(255,255,255,.1);}
+    .icon-btn svg{width:18px;fill:currentColor;}
+    @keyframes fadeIn{to{opacity:1;}}
+    @media (prefers-reduced-motion:reduce){*{animation:none!important;}}
+  </style>
 </head>
 <body>
+  <canvas id="rose" aria-hidden="true"></canvas>
 
-  <!-- ===== Three stacked canvases build the cinematic depth ===== -->
-  <canvas id="bgCanvas"   class="layer" aria-hidden="true"></canvas>  <!-- stars + bokeh -->
-  <canvas id="mainCanvas" class="layer" aria-hidden="true"></canvas>  <!-- roses + particle text + fireworks -->
-  <canvas id="glowCanvas" class="layer glow" aria-hidden="true"></canvas> <!-- bloom / glow -->
-
-  <!-- Static ambience (CSS-only): aurora, vignette, film grain -->
-  <div class="aurora aurora-1" aria-hidden="true"></div>
-  <div class="aurora aurora-2" aria-hidden="true"></div>
-  <div class="aurora aurora-3" aria-hidden="true"></div>
-  <div class="vignette" aria-hidden="true"></div>
-  <div class="grain" aria-hidden="true"></div>
-
-  <!-- ===== DOM text overlays (crisp typography above the canvases) ===== -->
-  <div class="overlay">
-    <p id="kicker" class="kicker"></p>
-
-    <!-- Gold underline that draws itself under the name -->
-    <div id="goldRule" class="gold-rule" aria-hidden="true"></div>
-
-    <!-- Giant gradient age number -->
-    <div id="ageNumber" class="age-number" aria-hidden="true"></div>
-    <p id="ageSub" class="age-sub"></p>
-
-    <!-- Birthday quote -->
-    <blockquote id="quoteLine" class="quote"></blockquote>
-
-    <!-- Signature block -->
-    <p id="signature" class="sign-from"></p>
-    <p id="signName" class="sign-name"></p>
-    <div id="heartMark" class="heart">&#10084;</div>
+  <div class="title">
+    <p class="k">Happy Birthday</p>
+    <p class="n">Agnes Charity</p>
   </div>
 
-  <!-- ===== Controls (revealed after the clean 15s) ===== -->
-  <div id="controls" class="controls">
-    <button id="replayBtn" class="icon-btn" type="button" aria-label="Replay" title="Replay">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a7 7 0 1 1-6.4 4.2H8V7H2v6h2.2v-2A9 9 0 1 0 12 3v2z"/></svg>
-    </button>
-    <button id="soundBtn" class="icon-btn" type="button" aria-label="Sound" title="Sound">
-      <svg class="s-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.1-3.8v7.6a4.5 4.5 0 0 0 2.1-3.8z"/></svg>
-      <svg class="s-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4zm12.6 3 2.1-2.1-1.4-1.4-2.1 2.1-2.1-2.1-1.4 1.4 2.1 2.1-2.1 2.1 1.4 1.4 2.1-2.1 2.1 2.1 1.4-1.4-2.1-2.1z"/></svg>
+  <div class="letter" id="letter">
+    <div class="greet" data-line>Agnes,</div>
+    <p data-line>You have a way of turning ordinary days into ones I never want to end.</p>
+    <p data-line>My life is softer, warmer, and far more beautiful simply because you are in it.</p>
+    <p data-line>Happy birthday, my love &mdash; here&rsquo;s to every year I get to spend beside you.</p>
+    <div class="sign" data-line>Bob Sebastian</div>
+  </div>
+
+  <div class="controls" id="controls">
+    <button class="icon-btn" id="replay" type="button" aria-label="Replay" title="Replay">
+      <svg viewBox="0 0 24 24"><path d="M12 5a7 7 0 1 1-6.4 4.2H8V7H2v6h2.2v-2A9 9 0 1 0 12 3v2z"/></svg>
     </button>
   </div>
 
-  <!-- ===== One-time gentle prompt so audio can begin (auto-hides) ===== -->
-  <button id="tapStart" class="tap-start" type="button">
-    <span class="tap-inner">
-      <span class="tap-heart">&#10084;</span>
-      <span class="tap-text">tap for sound</span>
-    </span>
-  </button>
-
-  <noscript>Please enable JavaScript to experience the surprise.</noscript>
-
-  <!-- Scripts load in dependency order (no bundler needed for GitHub Pages). -->
-  <script src="./js/config.js" defer></script>
-  <script src="./js/utils.js" defer></script>
-  <script src="./js/audio.js" defer></script>
-  <script src="./js/particles.js" defer></script>
-  <script src="./js/particleText.js" defer></script>
-  <script src="./js/roses.js" defer></script>
-  <script src="./js/fireworks.js" defer></script>
-  <script src="./js/sequencer.js" defer></script>
-  <script src="./js/main.js" defer></script>
+  <script src="./rose.js" defer></script>
 </body>
 </html>
