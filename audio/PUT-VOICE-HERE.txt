@@ -1,0 +1,5 @@
+(Optional) To have YOUR voice read the letter:
+1. Record it on your phone.
+2. Save it here as  letter.m4a  (or letter.mp3).
+3. In js/config.js set  narration: { enabled: true, ... }
+The background music will automatically lower while you speak.
